@@ -1,4 +1,4 @@
-﻿const hoursPerWeekInput = document.getElementById("hoursPerWeek");
+const hoursPerWeekInput = document.getElementById("hoursPerWeek");
 const hoursPerDayInput = document.getElementById("hoursPerDay");
 const startDateInput = document.getElementById("startDate");
 const endDateInput = document.getElementById("endDate");
