@@ -486,6 +486,19 @@ body {
     .content-grid {
         grid-template-columns: 1fr;
     }
+
+    .hero-left {
+        grid-template-columns: 1fr;
+    }
+
+    .tool-shell {
+        padding: 22px;
+    }
+
+    .page {
+        padding: 16px 6vw 60px;
+        gap: 36px;
+    }
 }
 
 @media (max-width: 720px) {
@@ -502,5 +515,33 @@ body {
     .photo-caption {
         flex-direction: column;
         gap: 4px;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .post-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tool-shell {
+        padding: 18px;
+        border-radius: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .form-control {
+        padding: 8px 10px;
+    }
+
+    .tool-body input,
+    .tool-body select {
+        font-size: 1rem;
     }
 }
