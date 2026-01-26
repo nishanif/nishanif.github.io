@@ -1,19 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fiscal Year and Quarter Generator</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Fiscal Year and Quarter Generator</h1>
-        <div class="date-input-container">
-            <label for="dateInput">Select a Date:</label>
-            <input type="date" id="dateInput">
+---
+layout: default
+title: Nishani Fernando
+---
+<section class="hero hero-left">
+    <div class="hero-media">
+        <div class="photo-card small-photo no-box">
+            <img src="{{ "/images/profile%20pic.JPG" | relative_url }}" alt="Portrait of Nishani Fernando">
         </div>
-        <button onclick="generateFiscalYear()">Generate</button>
-        <p id="result"></p>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
+    <div class="hero-text">
+        <p class="eyebrow">HRIS & Reporting Consultant</p>
+        <h1>Hi, I am Nishani Fernando.</h1>
+        <p class="lede">
+            I am fascinated by information technology and its use cases in Human Resource Management. I build
+            efficient HR systems, reporting workflows, and technology-enabled processes that help teams make
+            better decisions.
+        </p>
+        <div class="hero-actions">
+            <a class="button primary" href="{{ "/posts/" | relative_url }}">Read posts</a>
+            <a class="button ghost" href="{{ "/tools/" | relative_url }}">Explore tools</a>
+        </div>
+    </div>
+</section>
+
+<section class="content-grid">
+    <article class="card glass">
+        <h2>About me</h2>
+        <p>
+            As an experienced HRIS and HR reporting consultant with over five years of experience, I have worked
+            across software engineering, law, staffing and recruitment, and banking and finance. My background in
+            HRIS administration and reporting has sharpened my analytical and problem-solving skills. I specialize
+            in streamlining HR processes, implementing new technologies, and developing reporting systems that serve
+            diverse stakeholders.
+        </p>
+        <p>
+            Throughout my career, I have focused on delivering practical, innovative solutions that improve the
+            efficiency and effectiveness of HR operations. I stay current with emerging trends and technologies in HR
+            so I can keep improving the services I provide to clients.
+        </p>
+    </article>
+    <article class="card contact">
+        <h2>Contact me</h2>
+        <p>For collaborations, consulting, or speaking opportunities:</p>
+        <a class="link-pill" href="https://www.linkedin.com/in/nishani-fernando/" target="_blank" rel="noreferrer">LinkedIn</a>
+        <p class="small">Prefer email? Let me know and I will add it here.</p>
+    </article>
+</section>

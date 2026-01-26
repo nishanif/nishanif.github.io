@@ -1,0 +1,19 @@
+---
+layout: default
+title: Fiscal Year and Quarter Generator
+permalink: /tools/fiscal-year-quarter/
+---
+<section class="tool-shell">
+    <div class="tool-header">
+        <h1>Fiscal Year and Quarter Generator</h1>
+        <p>Pick a date to see the fiscal year and quarter (FY starts in July).</p>
+    </div>
+    <div class="tool-body">
+        <label for="dateInput">Select a date</label>
+        <input type="date" id="dateInput" />
+        <button id="generateBtn" type="button">Generate</button>
+        <div id="result" class="tool-result" aria-live="polite"></div>
+    </div>
+</section>
+
+<script src="{{ "/tools/fiscal-year-quarter.js" | relative_url }}"></script>

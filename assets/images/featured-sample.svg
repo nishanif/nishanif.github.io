@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e1f5ea"/>
+      <stop offset="100%" stop-color="#c8f0dd"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1f6b4f"/>
+      <stop offset="100%" stop-color="#2d8b63"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <circle cx="980" cy="120" r="140" fill="#b7e6d0" opacity="0.7"/>
+  <circle cx="220" cy="560" r="180" fill="#a7dcc6" opacity="0.65"/>
+  <rect x="120" y="140" width="960" height="420" rx="28" fill="#ffffff" opacity="0.9"/>
+  <rect x="160" y="200" width="360" height="10" rx="5" fill="#d4eadf"/>
+  <rect x="160" y="230" width="460" height="10" rx="5" fill="#d4eadf"/>
+  <rect x="160" y="260" width="320" height="10" rx="5" fill="#d4eadf"/>
+  <rect x="160" y="330" width="300" height="18" rx="9" fill="url(#accent)"/>
+  <text x="160" y="400" font-family="'Space Grotesk', Arial, sans-serif" font-size="40" fill="#1f6b4f">Fiscal Year &amp; Quarter</text>
+  <text x="160" y="450" font-family="'Space Grotesk', Arial, sans-serif" font-size="20" fill="#4b6b59">A quick way to align dates with FY reporting cycles.</text>
+</svg>

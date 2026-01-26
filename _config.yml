@@ -1,0 +1,23 @@
+# Site settings
+title: Nishani Fernando
+name: Nishani Fernando
+url: ""
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+permalink: /posts/:title/
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: Nishani Fernando
+      image: /assets/images/featured-sample.svg

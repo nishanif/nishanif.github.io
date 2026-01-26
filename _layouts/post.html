@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} | {{ site.name }}</title>
+    <link rel="stylesheet" href="{{ "/styles.css" | relative_url }}">
+    {% seo %}
+</head>
+<body>
+    <div class="background-grid"></div>
+    <header class="site-header">
+        <a class="logo" href="{{ "/" | relative_url }}">{{ site.name }}</a>
+        <nav class="nav">
+            <a href="{{ "/" | relative_url }}">About</a>
+            <a class="active" href="{{ "/posts/" | relative_url }}">Posts</a>
+            <a href="{{ "/tools/" | relative_url }}">Tools</a>
+        </nav>
+        <a class="cta-button" href="https://www.linkedin.com/in/nishani-fernando/" target="_blank" rel="noreferrer">Connect</a>
+    </header>
+
+    <main class="page">
+        <article class="post-shell">
+            {% if page.image %}
+                <img class="post-hero" src="{{ page.image | relative_url }}" alt="{{ page.title }}">
+            {% endif %}
+            <div class="post-header">
+                <p class="post-meta">{{ page.date | date: "%B %d, %Y" }}</p>
+                <h1>{{ page.title }}</h1>
+            </div>
+            <div class="post-content">
+                {{ content }}
+            </div>
+        </article>
+    </main>
+</body>
+</html>

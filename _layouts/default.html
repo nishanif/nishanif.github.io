@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include head.html %}
+<body>
+    <div class="background-grid"></div>
+    <header class="site-header">
+        <a class="logo" href="{{ "/" | relative_url }}">{{ site.name }}</a>
+        <nav class="nav">
+            <a class="{% if page.url == "/" %}active{% endif %}" href="{{ "/" | relative_url }}">About</a>
+            <a class="{% if page.url contains "/posts" %}active{% endif %}" href="{{ "/posts/" | relative_url }}">Posts</a>
+            <a class="{% if page.url contains "/tools" %}active{% endif %}" href="{{ "/tools/" | relative_url }}">Tools</a>
+        </nav>
+        <a class="cta-button" href="https://www.linkedin.com/in/nishani-fernando/" target="_blank" rel="noreferrer">Connect</a>
+    </header>
+
+    <main class="page">
+        {{ content }}
+    </main>
+
+    <footer class="site-footer">
+        <p>Copyright {{ "now" | date: "%Y" }} {{ site.name }}.</p>
+    </footer>
+</body>
+</html>
