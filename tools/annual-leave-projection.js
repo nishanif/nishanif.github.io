@@ -76,17 +76,31 @@ function calculateProjection() {
 
     // Annual leave
     const annualAccruedHours = hoursPerWeek * ANNUAL_RATE * paidWeeks;
+    const annualCurrentDays = currentBalance / hoursPerDay;
+    const annualAccruedDays = annualAccruedHours / hoursPerDay;
+    const annualPlannedDays = plannedLeave / hoursPerDay;
     const annualProjectedHours = currentBalance + annualAccruedHours - plannedLeave;
     const annualProjectedDays = annualProjectedHours / hoursPerDay;
 
     // Personal leave
     const personalAccruedHours = hoursPerWeek * PERSONAL_RATE * paidWeeks;
+    const personalCurrentDays = currentPersonal / hoursPerDay;
+    const personalAccruedDays = personalAccruedHours / hoursPerDay;
+    const personalPlannedDays = plannedPersonal / hoursPerDay;
     const personalProjectedHours = currentPersonal + personalAccruedHours - plannedPersonal;
     const personalProjectedDays = personalProjectedHours / hoursPerDay;
 
     result.textContent =
-        `Annual leave\n- Accrued: ${formatHours(annualAccruedHours)}\n- Projected balance: ${formatHours(annualProjectedHours)} (${formatDays(annualProjectedDays)})\n\n` +
-        `Personal leave\n- Accrued: ${formatHours(personalAccruedHours)}\n- Projected balance: ${formatHours(personalProjectedHours)} (${formatDays(personalProjectedDays)})`;
+        `Annual leave\n` +
+        `- Current balance: ${formatDays(annualCurrentDays)}\n` +
+        `- Accrued this period: ${formatDays(annualAccruedDays)}\n` +
+        `- Planned leave: ${formatDays(annualPlannedDays)}\n` +
+        `- Projected balance: ${formatDays(annualProjectedDays)}\n\n` +
+        `Personal leave\n` +
+        `- Current balance: ${formatDays(personalCurrentDays)}\n` +
+        `- Accrued this period: ${formatDays(personalAccruedDays)}\n` +
+        `- Planned leave: ${formatDays(personalPlannedDays)}\n` +
+        `- Projected balance: ${formatDays(personalProjectedDays)}`;
 }
 
 calculateButton.addEventListener("click", calculateProjection);
