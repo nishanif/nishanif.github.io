@@ -10,6 +10,7 @@ const unpaidWeeksInput = document.getElementById("unpaidWeeks");
 const unpaidDaysInput = document.getElementById("unpaidDays");
 const result = document.getElementById("leaveResult");
 const calculateButton = document.getElementById("calculateLeave");
+const resetButton = document.getElementById("resetLeave");
 
 const ANNUAL_RATE = 4 / 52; // 7.6923% of ordinary hours
 const PERSONAL_RATE = 1 / 26; // 10 days per year
@@ -109,6 +110,30 @@ function calculateProjection() {
 }
 
 calculateButton.addEventListener("click", calculateProjection);
+
+resetButton.addEventListener("click", () => {
+    [
+        hoursPerWeekInput,
+        hoursPerDayInput,
+        startDateInput,
+        endDateInput,
+        currentBalanceInput,
+        plannedLeaveInput,
+        currentPersonalBalanceInput,
+        plannedPersonalLeaveInput,
+        unpaidWeeksInput,
+        unpaidDaysInput,
+    ].forEach((input) => {
+        if (input.type === "number" || input.type === "date") {
+            input.value = "";
+        } else {
+            input.value = "";
+        }
+    });
+
+    result.textContent = "";
+    hoursPerWeekInput.focus();
+});
 
 [
     startDateInput,
