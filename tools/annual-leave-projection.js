@@ -13,17 +13,26 @@ const calculateButton = document.getElementById("calculateLeave");
 
 const ANNUAL_RATE = 4 / 52; // 7.6923% of ordinary hours
 const PERSONAL_RATE = 1 / 26; // 10 days per year
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 function toNumber(value) {
     const parsed = parseFloat(value);
     return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function daysBetween(start, end) {
-    const msPerDay = 1000 * 60 * 60 * 24;
-    const startDate = new Date(`${start}T00:00:00`);
-    const endDate = new Date(`${end}T00:00:00`);
-    return Math.max(0, Math.round((endDate - startDate) / msPerDay));
+function daysBetweenInclusive(start, end) {
+    const [startYear, startMonth, startDay] = start.split("-").map(Number);
+    const [endYear, endMonth, endDay] = end.split("-").map(Number);
+
+    const startUtc = Date.UTC(startYear, startMonth - 1, startDay);
+    const endUtc = Date.UTC(endYear, endMonth - 1, endDay);
+
+    if (Number.isNaN(startUtc) || Number.isNaN(endUtc) || endUtc < startUtc) {
+        return -1;
+    }
+
+    // Use UTC to avoid DST shifts and count both start and end dates.
+    return Math.floor((endUtc - startUtc) / MS_PER_DAY) + 1;
 }
 
 function formatHours(value) {
@@ -54,9 +63,9 @@ function calculateProjection() {
         return;
     }
 
-    const totalDays = daysBetween(startDateInput.value, endDateInput.value);
+    const totalDays = daysBetweenInclusive(startDateInput.value, endDateInput.value);
     if (totalDays <= 0) {
-        result.textContent = "End date must be after the start date.";
+        result.textContent = "End date must be on or after the start date.";
         return;
     }
 
