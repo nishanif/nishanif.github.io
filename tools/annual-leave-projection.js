@@ -53,6 +53,11 @@ function calculateProjection() {
     const unpaidWeeks = toNumber(unpaidWeeksInput.value);
     const unpaidDays = toNumber(unpaidDaysInput.value);
 
+    if (currentBalanceInput.value === "") {
+        result.textContent = "Please enter your current annual leave balance (use 0 if none).";
+        return;
+    }
+
     if (!hoursPerWeek || !hoursPerDay) {
         result.textContent = "Please enter ordinary hours per week and hours per day.";
         return;
