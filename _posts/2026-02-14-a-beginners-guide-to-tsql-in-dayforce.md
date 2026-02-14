@@ -2,7 +2,7 @@
 layout: post
 title: "A Beginner's Guide to Transact-SQL (T-SQL) in Dayforce"
 date: 2026-02-14
-image: /assets/images/featured-sample.svg
+image: /assets/images/featured-tsql-dayforce.svg
 excerpt: "Core T-SQL concepts for Dayforce calculated fields, validation columns, and reporting logic."
 categories:
   - Dayforce
