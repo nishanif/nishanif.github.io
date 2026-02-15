@@ -21,3 +21,6 @@ defaults:
       layout: post
       author: Nishani Fernando
       image: /assets/images/featured-sample.svg
+      plugins:
+  - jekyll-sitemap
+
