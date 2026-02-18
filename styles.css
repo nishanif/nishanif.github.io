@@ -236,6 +236,12 @@ body {
     margin: 0 0 8px;
 }
 
+.section-header h2 {
+    font-family: "Fraunces", "Times New Roman", serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 0 0 8px;
+}
+
 .section-header p {
     color: var(--ink-soft);
     margin: 0;
