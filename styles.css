@@ -188,6 +188,11 @@ body {
     gap: 24px;
 }
 
+.content-stack {
+    display: grid;
+    gap: 24px;
+}
+
 .card {
     background: #ffffff;
     border-radius: 24px;
