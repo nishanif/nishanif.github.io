@@ -499,6 +499,11 @@ body {
     margin: 0;
 }
 
+.tool-body .muted {
+    color: var(--ink-soft);
+    margin: 0;
+}
+
 .tool-body button {
     justify-self: start;
     padding: 10px 18px;

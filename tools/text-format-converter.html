@@ -22,12 +22,65 @@ permalink: /tools/text-format-converter/
                     <option value="full">Format full text once</option>
                 </select>
             </label>
+        </div>
+
+        <label class="form-control">
+            Custom pattern
+            <textarea id="customPatternInput" rows="4" placeholder="e.g., [EMP-{index}] {upper}"></textarea>
+        </label>
+        <p class="muted">If Custom pattern is filled, it will override Format template.</p>
+
+        <label class="form-control">
+            Maximum character length
+            <input type="number" id="maxLengthInput" min="1" step="1" placeholder="e.g., 100">
+        </label>
+
+        <div class="form-grid form-grid-two">
+            <label class="form-control">
+                Text case pattern
+                <select id="textCasePattern">
+                    <option value="custom">Custom (no auto case change)</option>
+                    <option value="upper">ALL UPPER CASE</option>
+                    <option value="lower">all lower case</option>
+                    <option value="sentence">Sentence case</option>
+                    <option value="title">Capitalize Each Word</option>
+                    <option value="toggle">tOGGLE cASE</option>
+                </select>
+            </label>
 
             <label class="form-control">
-                Output joiner
-                <input type="text" id="outputJoiner" value="\n" placeholder="\n, ,, |, etc.">
+                Space replacement
+                <select id="spaceReplacePattern">
+                    <option value="none">No change</option>
+                    <option value="blank">Blank</option>
+                    <option value="underscore">_</option>
+                    <option value="custom">Custom</option>
+                </select>
             </label>
         </div>
+
+        <label class="form-control" id="customSpaceWrap" hidden>
+            Custom space replacement
+            <input type="text" id="customSpaceValue" placeholder="e.g., -" value="-">
+        </label>
+
+        <div class="form-grid form-grid-two">
+            <label class="form-control">
+                Date and time stamp
+                <select id="timestampPattern">
+                    <option value="none">None</option>
+                    <option value="yyyy">YYYY</option>
+                    <option value="yyyy-mm">YYYY-MM</option>
+                    <option value="yyyy-mmm">YYYY-MMM</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </label>
+        </div>
+
+        <label class="form-control" id="customTimestampWrap" hidden>
+            Custom timestamp format
+            <input type="text" id="customTimestampValue" placeholder="e.g., YYYY-MM-DD HH:mm:ss" value="YYYY-MM-DD HH:mm:ss">
+        </label>
 
         <div class="form-grid form-grid-two">
             <label class="check-control">
@@ -44,7 +97,7 @@ permalink: /tools/text-format-converter/
             Format template
             <textarea id="templateInput" rows="6" placeholder="- {line}">- {line}</textarea>
         </label>
-        <p class="muted">Tokens: {line}, {line_trimmed}, {index}, {index0}, {upper}, {lower}, {text}</p>
+        <p class="muted">Tokens: {line}, {line_original}, {line_trimmed}, {index}, {index0}, {upper}, {lower}, {text}, {text_original}, {timestamp}</p>
 
         <div class="form-actions">
             <button id="formatText" type="button">Format text</button>
