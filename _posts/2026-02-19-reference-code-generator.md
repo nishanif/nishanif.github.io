@@ -2,7 +2,7 @@
 layout: post
 title: "Introducing the Reference Code Generator"
 date: 2026-02-19
-image: /assets/images/featured-sample.svg
+image: /assets/images/featured-reference-code.svg
 excerpt: "Generate clean reference codes from pasted text with case, spacing, character-length, and CSV export options."
 categories:
   - Tools

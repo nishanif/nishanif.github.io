@@ -1,0 +1,41 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Reference Code Generator</title>
+  <desc id="desc">Illustration of code-like text blocks and generated reference IDs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f2a1e"/>
+      <stop offset="100%" stop-color="#1f6b4f"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f6fbf8"/>
+      <stop offset="100%" stop-color="#e7f4ee"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1040" cy="110" r="180" fill="#62c28a" fill-opacity="0.18"/>
+  <circle cx="140" cy="570" r="220" fill="#62c28a" fill-opacity="0.12"/>
+
+  <rect x="90" y="88" width="1020" height="454" rx="28" fill="url(#card)" stroke="#cde4d8" stroke-width="2"/>
+
+  <rect x="136" y="152" width="468" height="62" rx="12" fill="#ffffff" stroke="#d7e9df"/>
+  <rect x="136" y="240" width="468" height="62" rx="12" fill="#ffffff" stroke="#d7e9df"/>
+  <rect x="136" y="328" width="468" height="62" rx="12" fill="#ffffff" stroke="#d7e9df"/>
+
+  <text x="158" y="191" font-size="24" font-family="Space Grotesk, Arial, sans-serif" fill="#4f7262">fox eat chickEN</text>
+  <text x="158" y="279" font-size="24" font-family="Space Grotesk, Arial, sans-serif" fill="#4f7262">i Love ro eat 4 biscUits</text>
+  <text x="158" y="367" font-size="24" font-family="Space Grotesk, Arial, sans-serif" fill="#4f7262">new starter code</text>
+
+  <path d="M644 278 L734 278" stroke="#1f6b4f" stroke-width="7" stroke-linecap="round"/>
+  <path d="M706 252 L734 278 L706 304" fill="none" stroke="#1f6b4f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="768" y="152" width="300" height="62" rx="12" fill="#1f6b4f"/>
+  <rect x="768" y="240" width="300" height="62" rx="12" fill="#1f6b4f"/>
+  <rect x="768" y="328" width="300" height="62" rx="12" fill="#1f6b4f"/>
+
+  <text x="792" y="191" font-size="22" font-family="Space Grotesk, Arial, sans-serif" font-weight="600" fill="#ffffff">FOX_EAT_CHICKEN</text>
+  <text x="792" y="279" font-size="22" font-family="Space Grotesk, Arial, sans-serif" font-weight="600" fill="#ffffff">I_LOVE_RO_EAT_4</text>
+  <text x="792" y="367" font-size="22" font-family="Space Grotesk, Arial, sans-serif" font-weight="600" fill="#ffffff">NEW_STARTER_CD</text>
+
+  <text x="90" y="60" font-size="44" font-family="Fraunces, Georgia, serif" fill="#ffffff">Reference Code Generator</text>
+</svg>
