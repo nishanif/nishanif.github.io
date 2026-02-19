@@ -2,6 +2,12 @@ const sourceTextInput = document.getElementById("sourceText");
 const formatModeSelect = document.getElementById("formatMode");
 const textCasePatternSelect = document.getElementById("textCasePattern");
 const spaceReplacePatternSelect = document.getElementById("spaceReplacePattern");
+const customSpaceWrap = document.getElementById("customSpaceWrap");
+const customSpaceValueInput = document.getElementById("customSpaceValue");
+const specialTextInput = document.getElementById("specialTextInput");
+const specialTextPositionSelect = document.getElementById("specialTextPosition");
+const specialNWrap = document.getElementById("specialNWrap");
+const specialNValueInput = document.getElementById("specialNValue");
 const timestampPatternSelect = document.getElementById("timestampPattern");
 const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
@@ -16,6 +22,14 @@ const MAX_OUTPUT_LENGTH = 256;
 
 function setStatus(message) {
     statusBox.textContent = message;
+}
+
+function decodeEscapes(value) {
+    return value
+        .replace(/\\\\/g, "\\")
+        .replace(/\\r\\n/g, "\r\n")
+        .replace(/\\n/g, "\n")
+        .replace(/\\t/g, "\t");
 }
 
 function toSentenceCase(value) {
@@ -87,6 +101,8 @@ function getSpaceReplacement() {
             return "@";
         case "hash":
             return "#";
+        case "custom":
+            return decodeEscapes(customSpaceValueInput.value);
         default:
             return null;
     }
@@ -144,6 +160,29 @@ function appendTimestamp(value, timestamp) {
     return `${value} ${timestamp}`;
 }
 
+function applySpecialText(value, specialText, position, nValue) {
+    if (!specialText || position === "none") {
+        return value;
+    }
+
+    switch (position) {
+        case "line_start":
+            return `${specialText}${value}`;
+        case "line_end":
+            return `${value}${specialText}`;
+        case "after_n": {
+            const index = Math.min(Math.max(nValue, 0), value.length);
+            return `${value.slice(0, index)}${specialText}${value.slice(index)}`;
+        }
+        case "before_n": {
+            const index = Math.min(Math.max(nValue - 1, 0), value.length);
+            return `${value.slice(0, index)}${specialText}${value.slice(index)}`;
+        }
+        default:
+            return value;
+    }
+}
+
 function truncateIfNeeded(value) {
     if (value.length <= MAX_OUTPUT_LENGTH) {
         return {
@@ -158,18 +197,58 @@ function truncateIfNeeded(value) {
     };
 }
 
+function needsNValue() {
+    const position = specialTextPositionSelect.value;
+    return position === "after_n" || position === "before_n";
+}
+
+function updateConditionalInputs() {
+    customSpaceWrap.hidden = spaceReplacePatternSelect.value !== "custom";
+    specialNWrap.hidden = !needsNValue();
+}
+
+function getValidatedNValue(specialText) {
+    if (!specialText || !needsNValue()) {
+        return 0;
+    }
+
+    const rawValue = specialNValueInput.value.trim();
+    const parsed = Number.parseInt(rawValue, 10);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+        return null;
+    }
+
+    return parsed;
+}
+
 function formatText() {
     const sourceText = sourceTextInput.value;
     const mode = formatModeSelect.value;
     const textCasePattern = textCasePatternSelect.value;
     const trimLines = trimLinesInput.checked;
     const skipEmpty = skipEmptyInput.checked;
+    const spacePattern = spaceReplacePatternSelect.value;
     const spaceReplacement = getSpaceReplacement();
     const timestamp = buildTimestamp();
+    const specialText = decodeEscapes(specialTextInput.value);
+    const specialPosition = specialTextPositionSelect.value;
+    const nValue = getValidatedNValue(specialText);
 
     if (!sourceText) {
         outputText.value = "";
         setStatus("Paste some source text to format.");
+        return;
+    }
+
+    if (spacePattern === "custom" && customSpaceValueInput.value === "") {
+        outputText.value = "";
+        setStatus("Please enter a custom space replacement character.");
+        return;
+    }
+
+    if (nValue === null) {
+        outputText.value = "";
+        setStatus("Please enter a valid N value (1 or higher).");
         return;
     }
 
@@ -184,7 +263,8 @@ function formatText() {
 
         const transformedText = transformValue(workingText, textCasePattern, spaceReplacement);
         const withTimestamp = appendTimestamp(transformedText, timestamp);
-        const output = truncateIfNeeded(withTimestamp);
+        const withSpecialText = applySpecialText(withTimestamp, specialText, specialPosition, nValue);
+        const output = truncateIfNeeded(withSpecialText);
 
         outputText.value = output.value;
         setStatus(
@@ -210,7 +290,8 @@ function formatText() {
     const outputLines = preparedLines.map((line) => {
         const transformed = transformValue(line, textCasePattern, spaceReplacement);
         const withTimestamp = appendTimestamp(transformed, timestamp);
-        const output = truncateIfNeeded(withTimestamp);
+        const withSpecialText = applySpecialText(withTimestamp, specialText, specialPosition, nValue);
+        const output = truncateIfNeeded(withSpecialText);
         if (output.truncated) {
             truncatedLines += 1;
         }
@@ -247,11 +328,16 @@ function resetForm() {
     formatModeSelect.value = "line";
     textCasePatternSelect.value = "none";
     spaceReplacePatternSelect.value = "none";
+    customSpaceValueInput.value = "";
+    specialTextInput.value = "";
+    specialTextPositionSelect.value = "none";
+    specialNValueInput.value = "";
     timestampPatternSelect.value = "none";
     trimLinesInput.checked = true;
     skipEmptyInput.checked = true;
     outputText.value = "";
     setStatus("");
+    updateConditionalInputs();
     sourceTextInput.focus();
 }
 
@@ -264,3 +350,8 @@ sourceTextInput.addEventListener("keydown", (event) => {
         formatText();
     }
 });
+
+spaceReplacePatternSelect.addEventListener("change", updateConditionalInputs);
+specialTextPositionSelect.addEventListener("change", updateConditionalInputs);
+
+updateConditionalInputs();

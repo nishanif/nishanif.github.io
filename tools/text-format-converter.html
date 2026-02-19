@@ -54,9 +54,37 @@ permalink: /tools/text-format-converter/
                     <option value="semicolon">;</option>
                     <option value="at">@</option>
                     <option value="hash">#</option>
+                    <option value="custom">Custom</option>
                 </select>
             </label>
         </div>
+
+        <label class="form-control" id="customSpaceWrap" hidden>
+            Custom space replacement character
+            <input type="text" id="customSpaceValue" placeholder="e.g., *">
+        </label>
+
+        <div class="form-grid form-grid-two">
+            <label class="form-control">
+                Special text or character (optional)
+                <input type="text" id="specialTextInput" placeholder="e.g., #">
+            </label>
+            <label class="form-control">
+                Add special text position
+                <select id="specialTextPosition">
+                    <option value="none">Do not add</option>
+                    <option value="line_start">Beginning of each line</option>
+                    <option value="line_end">End of each line</option>
+                    <option value="after_n">After N characters</option>
+                    <option value="before_n">Before N characters</option>
+                </select>
+            </label>
+        </div>
+
+        <label class="form-control" id="specialNWrap" hidden>
+            N value
+            <input type="number" id="specialNValue" min="1" step="1" placeholder="e.g., 5">
+        </label>
 
         <div class="form-grid form-grid-two">
             <label class="form-control">
