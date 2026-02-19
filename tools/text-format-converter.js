@@ -1,5 +1,6 @@
 const sourceTextInput = document.getElementById("sourceText");
 const formatModeSelect = document.getElementById("formatMode");
+const lineLengthInput = document.getElementById("lineLengthInput");
 const textCasePatternSelect = document.getElementById("textCasePattern");
 const spaceReplacePatternSelect = document.getElementById("spaceReplacePattern");
 const customSpaceWrap = document.getElementById("customSpaceWrap");
@@ -15,11 +16,16 @@ const copyButton = document.getElementById("copyOutput");
 const resetButton = document.getElementById("resetFormatter");
 const outputText = document.getElementById("formattedOutput");
 const statusBox = document.getElementById("formatStatus");
+const lengthSummary = document.getElementById("lengthSummary");
 
 const MAX_OUTPUT_LENGTH = 256;
 
 function setStatus(message) {
     statusBox.textContent = message;
+}
+
+function setLengthSummary(message) {
+    lengthSummary.textContent = message;
 }
 
 function decodeEscapes(value) {
@@ -146,13 +152,119 @@ function truncateIfNeeded(value) {
     if (value.length <= MAX_OUTPUT_LENGTH) {
         return {
             value,
-            truncated: false,
+            lengthTruncated: false,
         };
     }
 
     return {
         value: value.slice(0, MAX_OUTPUT_LENGTH),
-        truncated: true,
+        lengthTruncated: true,
+    };
+}
+
+function applyPerLineLimit(value, limit) {
+    if (!Number.isFinite(limit) || limit < 1 || value.length <= limit) {
+        return {
+            value,
+            perLineLimited: false,
+        };
+    }
+
+    return {
+        value: value.slice(0, limit),
+        perLineLimited: true,
+    };
+}
+
+function parsePerLineLimit() {
+    const rawValue = lineLengthInput.value.trim();
+    if (!rawValue) {
+        return {
+            valid: true,
+            value: null,
+        };
+    }
+
+    const parsed = Number.parseInt(rawValue, 10);
+    if (!Number.isFinite(parsed) || parsed < 1) {
+        return {
+            valid: false,
+            value: null,
+        };
+    }
+
+    return {
+        valid: true,
+        value: parsed,
+    };
+}
+
+function updateLengthSummary(outputValue) {
+    if (!outputValue) {
+        setLengthSummary("");
+        return;
+    }
+
+    const lines = outputValue.split(/\r?\n/);
+    const lengths = lines.map((line) => line.length);
+    if (lengths.length <= 1) {
+        setLengthSummary(`Character length: ${lengths[0] || 0}`);
+        return;
+    }
+
+    const minLength = Math.min(...lengths);
+    const maxLength = Math.max(...lengths);
+    setLengthSummary(`Character length - Min: ${minLength}, Max: ${maxLength}`);
+}
+
+function buildStatus(baseMessage, perLineLimitedCount, lengthTruncatedCount, perLineLimitValue) {
+    const warnings = [];
+    if (perLineLimitedCount > 0 && Number.isFinite(perLineLimitValue)) {
+        warnings.push(`${perLineLimitedCount} line(s) were limited to ${perLineLimitValue} characters`);
+    }
+
+    if (lengthTruncatedCount > 0) {
+        warnings.push(`${lengthTruncatedCount} line(s) exceeded 256 characters and were truncated`);
+    }
+
+    if (!warnings.length) {
+        return baseMessage;
+    }
+
+    return `${baseMessage} Warning: ${warnings.join("; ")}.`;
+}
+
+function processOneValue(value, perLineLimit) {
+    const perLine = applyPerLineLimit(value, perLineLimit);
+    const maxLimit = truncateIfNeeded(perLine.value);
+    return {
+        value: maxLimit.value,
+        perLineLimited: perLine.perLineLimited,
+        lengthTruncated: maxLimit.lengthTruncated,
+    };
+}
+
+function applyLimitsByLine(value, perLineLimit) {
+    const lines = value.split(/\r?\n/);
+    let perLineLimitedCount = 0;
+    let lengthTruncatedCount = 0;
+    const limitedLines = lines.map((line) => {
+        const output = processOneValue(line, perLineLimit);
+        if (output.perLineLimited) {
+            perLineLimitedCount += 1;
+        }
+
+        if (output.lengthTruncated) {
+            lengthTruncatedCount += 1;
+        }
+
+        return output.value;
+    });
+
+    return {
+        value: limitedLines.join("\n"),
+        perLineLimitedCount,
+        lengthTruncatedCount,
     };
 }
 
@@ -191,22 +303,33 @@ function formatText() {
     const specialText = decodeEscapes(specialTextInput.value);
     const specialPosition = specialTextPositionSelect.value;
     const nValue = getValidatedNValue(specialText);
+    const perLineLimit = parsePerLineLimit();
 
     if (!sourceText) {
         outputText.value = "";
         setStatus("Paste some source text to format.");
+        setLengthSummary("");
         return;
     }
 
     if (spacePattern === "custom" && customSpaceValueInput.value === "") {
         outputText.value = "";
         setStatus("Please enter a custom space replacement character.");
+        setLengthSummary("");
         return;
     }
 
     if (nValue === null) {
         outputText.value = "";
         setStatus("Please enter a valid N value (1 or higher).");
+        setLengthSummary("");
+        return;
+    }
+
+    if (!perLineLimit.valid) {
+        outputText.value = "";
+        setStatus("Please enter a valid character length (1 or higher).");
+        setLengthSummary("");
         return;
     }
 
@@ -216,19 +339,24 @@ function formatText() {
         if (skipEmpty && !workingText.trim()) {
             outputText.value = "";
             setStatus("Source text is empty after applying the selected options.");
+            setLengthSummary("");
             return;
         }
 
         const transformedText = transformValue(workingText, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformedText, specialText, specialPosition, nValue);
-        const output = truncateIfNeeded(withSpecialText);
+        const output = applyLimitsByLine(withSpecialText, perLineLimit.value);
 
         outputText.value = output.value;
         setStatus(
-            output.truncated
-                ? "Formatted full text. Warning: output exceeded 256 characters and was truncated."
-                : "Formatted full text."
+            buildStatus(
+                "Formatted full text.",
+                output.perLineLimitedCount,
+                output.lengthTruncatedCount,
+                perLineLimit.value
+            )
         );
+        updateLengthSummary(output.value);
         return;
     }
 
@@ -240,26 +368,37 @@ function formatText() {
     if (!preparedLines.length) {
         outputText.value = "";
         setStatus("No lines left after applying the selected options.");
+        setLengthSummary("");
         return;
     }
 
-    let truncatedLines = 0;
+    let perLineLimitedCount = 0;
+    let lengthTruncatedCount = 0;
     const outputLines = preparedLines.map((line) => {
         const transformed = transformValue(line, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformed, specialText, specialPosition, nValue);
-        const output = truncateIfNeeded(withSpecialText);
-        if (output.truncated) {
-            truncatedLines += 1;
+        const output = processOneValue(withSpecialText, perLineLimit.value);
+        if (output.perLineLimited) {
+            perLineLimitedCount += 1;
         }
+
+        if (output.lengthTruncated) {
+            lengthTruncatedCount += 1;
+        }
+
         return output.value;
     });
 
     outputText.value = outputLines.join("\n");
     setStatus(
-        truncatedLines > 0
-            ? `Formatted ${preparedLines.length} line(s). Warning: ${truncatedLines} line(s) exceeded 256 characters and were truncated.`
-            : `Formatted ${preparedLines.length} line(s).`
+        buildStatus(
+            `Formatted ${preparedLines.length} line(s).`,
+            perLineLimitedCount,
+            lengthTruncatedCount,
+            perLineLimit.value
+        )
     );
+    updateLengthSummary(outputText.value);
 }
 
 async function copyOutput() {
@@ -282,6 +421,7 @@ async function copyOutput() {
 function resetForm() {
     sourceTextInput.value = "";
     formatModeSelect.value = "line";
+    lineLengthInput.value = "";
     textCasePatternSelect.value = "none";
     spaceReplacePatternSelect.value = "none";
     customSpaceValueInput.value = "";
@@ -292,6 +432,7 @@ function resetForm() {
     skipEmptyInput.checked = true;
     outputText.value = "";
     setStatus("");
+    setLengthSummary("");
     updateConditionalInputs();
     sourceTextInput.focus();
 }

@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Text Format Converter
+title: Refcode Generator
 permalink: /tools/text-format-converter/
 ---
 <section class="tool-shell">
     <div class="tool-header">
-        <h1>Text Format Converter</h1>
-        <p>Paste text and convert it using predefined formatting rules.</p>
+        <h1>Refcode Generator</h1>
+        <p>Paste text and generate formatted reference codes quickly.</p>
     </div>
     <div class="tool-body">
         <label class="form-control">
@@ -22,6 +22,10 @@ permalink: /tools/text-format-converter/
                     <option value="line">Format each line</option>
                     <option value="full">Format full text once</option>
                 </select>
+            </label>
+            <label class="form-control">
+                Character length per output line (optional)
+                <input type="number" id="lineLengthInput" min="1" step="1" placeholder="e.g., 12">
             </label>
         </div>
 
@@ -108,6 +112,7 @@ permalink: /tools/text-format-converter/
             <textarea id="formattedOutput" rows="8" readonly placeholder="Output will appear here"></textarea>
         </label>
         <div class="tool-result" id="formatStatus" aria-live="polite"></div>
+        <p class="muted" id="lengthSummary"></p>
     </div>
 </section>
 
