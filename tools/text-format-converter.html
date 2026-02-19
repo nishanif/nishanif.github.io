@@ -6,13 +6,14 @@ permalink: /tools/text-format-converter/
 <section class="tool-shell">
     <div class="tool-header">
         <h1>Text Format Converter</h1>
-        <p>Paste text and convert it into your own format template.</p>
+        <p>Paste text and convert it using predefined formatting rules.</p>
     </div>
     <div class="tool-body">
         <label class="form-control">
             Source text
             <textarea id="sourceText" rows="8" placeholder="Paste text here..."></textarea>
         </label>
+        <p class="muted">Maximum output length is 256 characters. The tool warns and truncates if exceeded.</p>
 
         <div class="form-grid form-grid-two">
             <label class="form-control">
@@ -24,16 +25,11 @@ permalink: /tools/text-format-converter/
             </label>
         </div>
 
-        <label class="form-control">
-            Maximum character length
-            <input type="number" id="maxLengthInput" min="1" step="1" placeholder="e.g., 100">
-        </label>
-
         <div class="form-grid form-grid-two">
             <label class="form-control">
                 Text case pattern
                 <select id="textCasePattern">
-                    <option value="custom">Custom (no auto case change)</option>
+                    <option value="none">No change</option>
                     <option value="upper">ALL UPPER CASE</option>
                     <option value="lower">all lower case</option>
                     <option value="sentence">Sentence case</option>
@@ -84,12 +80,6 @@ permalink: /tools/text-format-converter/
                 Skip empty lines
             </label>
         </div>
-
-        <label class="form-control">
-            Format template
-            <textarea id="templateInput" rows="6" placeholder="- {line}">- {line}</textarea>
-        </label>
-        <p class="muted">Tokens: {line}, {line_original}, {line_trimmed}, {index}, {index0}, {upper}, {lower}, {text}, {text_original}, {timestamp}</p>
 
         <div class="form-actions">
             <button id="formatText" type="button">Format text</button>

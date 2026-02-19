@@ -1,12 +1,10 @@
 const sourceTextInput = document.getElementById("sourceText");
 const formatModeSelect = document.getElementById("formatMode");
-const maxLengthInput = document.getElementById("maxLengthInput");
 const textCasePatternSelect = document.getElementById("textCasePattern");
 const spaceReplacePatternSelect = document.getElementById("spaceReplacePattern");
 const timestampPatternSelect = document.getElementById("timestampPattern");
 const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
-const templateInput = document.getElementById("templateInput");
 const formatButton = document.getElementById("formatText");
 const copyButton = document.getElementById("copyOutput");
 const resetButton = document.getElementById("resetFormatter");
@@ -14,30 +12,7 @@ const outputText = document.getElementById("formattedOutput");
 const statusBox = document.getElementById("formatStatus");
 
 const MONTH_SHORT_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function applyTemplate(template, tokens) {
-    return template.replace(/\{([a-z0-9_]+)\}/gi, (fullMatch, key) => {
-        const normalizedKey = key.toLowerCase();
-        return Object.prototype.hasOwnProperty.call(tokens, normalizedKey)
-            ? tokens[normalizedKey]
-            : fullMatch;
-    });
-}
-
-function buildTokens(line, fullText, index, lineOriginal, fullTextOriginal, timestamp) {
-    return {
-        line,
-        line_original: lineOriginal,
-        line_trimmed: line.trim(),
-        index: String(index + 1),
-        index0: String(index),
-        upper: line.toUpperCase(),
-        lower: line.toLowerCase(),
-        text: fullText,
-        text_original: fullTextOriginal,
-        timestamp,
-    };
-}
+const MAX_OUTPUT_LENGTH = 256;
 
 function setStatus(message) {
     statusBox.textContent = message;
@@ -157,8 +132,8 @@ function transformValue(value, casePattern, spaceReplacement) {
     return applySpaceReplacement(caseUpdated, spaceReplacement);
 }
 
-function appendTimestampIfNeeded(value, timestamp, hasTimestampToken) {
-    if (!timestamp || hasTimestampToken) {
+function appendTimestamp(value, timestamp) {
+    if (!timestamp) {
         return value;
     }
 
@@ -169,48 +144,32 @@ function appendTimestampIfNeeded(value, timestamp, hasTimestampToken) {
     return `${value} ${timestamp}`;
 }
 
-function limitTextLength(value, maxLength) {
-    if (!Number.isFinite(maxLength) || maxLength <= 0) {
-        return value;
+function truncateIfNeeded(value) {
+    if (value.length <= MAX_OUTPUT_LENGTH) {
+        return {
+            value,
+            truncated: false,
+        };
     }
 
-    return value.slice(0, maxLength);
+    return {
+        value: value.slice(0, MAX_OUTPUT_LENGTH),
+        truncated: true,
+    };
 }
 
 function formatText() {
     const sourceText = sourceTextInput.value;
-    const template = templateInput.value;
-    const maxLengthRaw = maxLengthInput.value.trim();
     const mode = formatModeSelect.value;
     const textCasePattern = textCasePatternSelect.value;
     const trimLines = trimLinesInput.checked;
     const skipEmpty = skipEmptyInput.checked;
     const spaceReplacement = getSpaceReplacement();
     const timestamp = buildTimestamp();
-    const hasTimestampToken = /\{timestamp\}/i.test(template);
-    const maxLength = Number.parseInt(maxLengthRaw, 10);
 
     if (!sourceText) {
         outputText.value = "";
         setStatus("Paste some source text to format.");
-        return;
-    }
-
-    if (!template) {
-        outputText.value = "";
-        setStatus("Add a format template before converting.");
-        return;
-    }
-
-    if (!maxLengthRaw) {
-        outputText.value = "";
-        setStatus("Please enter maximum character length.");
-        return;
-    }
-
-    if (!Number.isFinite(maxLength) || maxLength < 1) {
-        outputText.value = "";
-        setStatus("Maximum character length must be 1 or more.");
         return;
     }
 
@@ -224,16 +183,15 @@ function formatText() {
         }
 
         const transformedText = transformValue(workingText, textCasePattern, spaceReplacement);
-        const formatted = applyTemplate(
-            template,
-            buildTokens(transformedText, transformedText, 0, workingText, sourceText, timestamp)
-        );
+        const withTimestamp = appendTimestamp(transformedText, timestamp);
+        const output = truncateIfNeeded(withTimestamp);
 
-        outputText.value = limitTextLength(
-            appendTimestampIfNeeded(formatted, timestamp, hasTimestampToken),
-            maxLength
+        outputText.value = output.value;
+        setStatus(
+            output.truncated
+                ? "Formatted full text. Warning: output exceeded 256 characters and was truncated."
+                : "Formatted full text."
         );
-        setStatus("Formatted full text.");
         return;
     }
 
@@ -248,20 +206,23 @@ function formatText() {
         return;
     }
 
-    const transformedLines = preparedLines.map((line) => transformValue(line, textCasePattern, spaceReplacement));
-    const transformedFullText = transformedLines.join("\n");
+    let truncatedLines = 0;
+    const outputLines = preparedLines.map((line) => {
+        const transformed = transformValue(line, textCasePattern, spaceReplacement);
+        const withTimestamp = appendTimestamp(transformed, timestamp);
+        const output = truncateIfNeeded(withTimestamp);
+        if (output.truncated) {
+            truncatedLines += 1;
+        }
+        return output.value;
+    });
 
-    outputText.value = transformedLines
-        .map((line, index) => {
-            const formatted = applyTemplate(
-                template,
-                buildTokens(line, transformedFullText, index, preparedLines[index], sourceText, timestamp)
-            );
-            return limitTextLength(appendTimestampIfNeeded(formatted, timestamp, hasTimestampToken), maxLength);
-        })
-        .join("\n");
-
-    setStatus(`Formatted ${preparedLines.length} line(s).`);
+    outputText.value = outputLines.join("\n");
+    setStatus(
+        truncatedLines > 0
+            ? `Formatted ${preparedLines.length} line(s). Warning: ${truncatedLines} line(s) exceeded 256 characters and were truncated.`
+            : `Formatted ${preparedLines.length} line(s).`
+    );
 }
 
 async function copyOutput() {
@@ -284,13 +245,11 @@ async function copyOutput() {
 function resetForm() {
     sourceTextInput.value = "";
     formatModeSelect.value = "line";
-    maxLengthInput.value = "";
-    textCasePatternSelect.value = "custom";
+    textCasePatternSelect.value = "none";
     spaceReplacePatternSelect.value = "none";
     timestampPatternSelect.value = "none";
     trimLinesInput.checked = true;
     skipEmptyInput.checked = true;
-    templateInput.value = "- {line}";
     outputText.value = "";
     setStatus("");
     sourceTextInput.focus();
@@ -300,10 +259,8 @@ formatButton.addEventListener("click", formatText);
 copyButton.addEventListener("click", copyOutput);
 resetButton.addEventListener("click", resetForm);
 
-[templateInput, sourceTextInput, maxLengthInput].forEach((input) => {
-    input.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-            formatText();
-        }
-    });
+sourceTextInput.addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        formatText();
+    }
 });
