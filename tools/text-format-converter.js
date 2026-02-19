@@ -1,14 +1,9 @@
 const sourceTextInput = document.getElementById("sourceText");
 const formatModeSelect = document.getElementById("formatMode");
-const customPatternInput = document.getElementById("customPatternInput");
 const maxLengthInput = document.getElementById("maxLengthInput");
 const textCasePatternSelect = document.getElementById("textCasePattern");
 const spaceReplacePatternSelect = document.getElementById("spaceReplacePattern");
-const customSpaceWrap = document.getElementById("customSpaceWrap");
-const customSpaceValueInput = document.getElementById("customSpaceValue");
 const timestampPatternSelect = document.getElementById("timestampPattern");
-const customTimestampWrap = document.getElementById("customTimestampWrap");
-const customTimestampValueInput = document.getElementById("customTimestampValue");
 const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
 const templateInput = document.getElementById("templateInput");
@@ -19,14 +14,6 @@ const outputText = document.getElementById("formattedOutput");
 const statusBox = document.getElementById("formatStatus");
 
 const MONTH_SHORT_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function decodeEscapes(value) {
-    return value
-        .replace(/\\\\/g, "\\")
-        .replace(/\\r\\n/g, "\r\n")
-        .replace(/\\n/g, "\n")
-        .replace(/\\t/g, "\t");
-}
 
 function applyTemplate(template, tokens) {
     return template.replace(/\{([a-z0-9_]+)\}/gi, (fullMatch, key) => {
@@ -125,8 +112,6 @@ function getSpaceReplacement() {
             return "@";
         case "hash":
             return "#";
-        case "custom":
-            return decodeEscapes(customSpaceValueInput.value || "");
         default:
             return null;
     }
@@ -142,25 +127,6 @@ function applySpaceReplacement(value, replacement) {
 
 function padTwoDigits(value) {
     return String(value).padStart(2, "0");
-}
-
-function formatCustomTimestamp(dateObj, customPattern) {
-    let output = customPattern;
-    const replacements = [
-        ["YYYY", String(dateObj.getFullYear())],
-        ["MMM", MONTH_SHORT_NAMES[dateObj.getMonth()]],
-        ["MM", padTwoDigits(dateObj.getMonth() + 1)],
-        ["DD", padTwoDigits(dateObj.getDate())],
-        ["HH", padTwoDigits(dateObj.getHours())],
-        ["mm", padTwoDigits(dateObj.getMinutes())],
-        ["ss", padTwoDigits(dateObj.getSeconds())],
-    ];
-
-    replacements.forEach(([token, replacementValue]) => {
-        output = output.replace(new RegExp(token, "g"), replacementValue);
-    });
-
-    return output;
 }
 
 function buildTimestamp() {
@@ -181,8 +147,6 @@ function buildTimestamp() {
             return `${year}-${month}`;
         case "yyyy-mmm":
             return `${year}-${monthShort}`;
-        case "custom":
-            return formatCustomTimestamp(now, customTimestampValueInput.value || "YYYY-MM-DD HH:mm:ss");
         default:
             return "";
     }
@@ -213,15 +177,9 @@ function limitTextLength(value, maxLength) {
     return value.slice(0, maxLength);
 }
 
-function updateConditionalInputs() {
-    customSpaceWrap.hidden = spaceReplacePatternSelect.value !== "custom";
-    customTimestampWrap.hidden = timestampPatternSelect.value !== "custom";
-}
-
 function formatText() {
     const sourceText = sourceTextInput.value;
-    const customPattern = customPatternInput.value.trim();
-    const template = customPattern || templateInput.value;
+    const template = templateInput.value;
     const maxLengthRaw = maxLengthInput.value.trim();
     const mode = formatModeSelect.value;
     const textCasePattern = textCasePatternSelect.value;
@@ -326,34 +284,26 @@ async function copyOutput() {
 function resetForm() {
     sourceTextInput.value = "";
     formatModeSelect.value = "line";
-    customPatternInput.value = "";
     maxLengthInput.value = "";
     textCasePatternSelect.value = "custom";
     spaceReplacePatternSelect.value = "none";
-    customSpaceValueInput.value = "-";
     timestampPatternSelect.value = "none";
-    customTimestampValueInput.value = "YYYY-MM-DD HH:mm:ss";
     trimLinesInput.checked = true;
     skipEmptyInput.checked = true;
     templateInput.value = "- {line}";
     outputText.value = "";
     setStatus("");
-    updateConditionalInputs();
     sourceTextInput.focus();
 }
 
 formatButton.addEventListener("click", formatText);
 copyButton.addEventListener("click", copyOutput);
 resetButton.addEventListener("click", resetForm);
-spaceReplacePatternSelect.addEventListener("change", updateConditionalInputs);
-timestampPatternSelect.addEventListener("change", updateConditionalInputs);
 
-[templateInput, customPatternInput, sourceTextInput, maxLengthInput].forEach((input) => {
+[templateInput, sourceTextInput, maxLengthInput].forEach((input) => {
     input.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
             formatText();
         }
     });
 });
-
-updateConditionalInputs();

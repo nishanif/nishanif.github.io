@@ -25,12 +25,6 @@ permalink: /tools/text-format-converter/
         </div>
 
         <label class="form-control">
-            Custom pattern
-            <textarea id="customPatternInput" rows="4" placeholder="e.g., [EMP-{index}] {upper}"></textarea>
-        </label>
-        <p class="muted">If Custom pattern is filled, it will override Format template.</p>
-
-        <label class="form-control">
             Maximum character length
             <input type="number" id="maxLengthInput" min="1" step="1" placeholder="e.g., 100">
         </label>
@@ -64,15 +58,9 @@ permalink: /tools/text-format-converter/
                     <option value="semicolon">;</option>
                     <option value="at">@</option>
                     <option value="hash">#</option>
-                    <option value="custom">Custom</option>
                 </select>
             </label>
         </div>
-
-        <label class="form-control" id="customSpaceWrap" hidden>
-            Custom space replacement
-            <input type="text" id="customSpaceValue" placeholder="e.g., -" value="-">
-        </label>
 
         <div class="form-grid form-grid-two">
             <label class="form-control">
@@ -82,15 +70,9 @@ permalink: /tools/text-format-converter/
                     <option value="yyyy">YYYY</option>
                     <option value="yyyy-mm">YYYY-MM</option>
                     <option value="yyyy-mmm">YYYY-MMM</option>
-                    <option value="custom">Custom</option>
                 </select>
             </label>
         </div>
-
-        <label class="form-control" id="customTimestampWrap" hidden>
-            Custom timestamp format
-            <input type="text" id="customTimestampValue" placeholder="e.g., YYYY-MM-DD HH:mm:ss" value="YYYY-MM-DD HH:mm:ss">
-        </label>
 
         <div class="form-grid form-grid-two">
             <label class="check-control">
