@@ -1,0 +1,63 @@
+---
+layout: default
+title: Text Format Converter
+permalink: /tools/text-format-converter/
+---
+<section class="tool-shell">
+    <div class="tool-header">
+        <h1>Text Format Converter</h1>
+        <p>Paste text and convert it into your own format template.</p>
+    </div>
+    <div class="tool-body">
+        <label class="form-control">
+            Source text
+            <textarea id="sourceText" rows="8" placeholder="Paste text here..."></textarea>
+        </label>
+
+        <div class="form-grid form-grid-two">
+            <label class="form-control">
+                Format mode
+                <select id="formatMode">
+                    <option value="line">Format each line</option>
+                    <option value="full">Format full text once</option>
+                </select>
+            </label>
+
+            <label class="form-control">
+                Output joiner
+                <input type="text" id="outputJoiner" value="\n" placeholder="\n, ,, |, etc.">
+            </label>
+        </div>
+
+        <div class="form-grid form-grid-two">
+            <label class="check-control">
+                <input type="checkbox" id="trimLines" checked>
+                Trim spaces on each line
+            </label>
+            <label class="check-control">
+                <input type="checkbox" id="skipEmpty" checked>
+                Skip empty lines
+            </label>
+        </div>
+
+        <label class="form-control">
+            Format template
+            <textarea id="templateInput" rows="6" placeholder="- {line}">- {line}</textarea>
+        </label>
+        <p class="muted">Tokens: {line}, {line_trimmed}, {index}, {index0}, {upper}, {lower}, {text}</p>
+
+        <div class="form-actions">
+            <button id="formatText" type="button">Format text</button>
+            <button id="copyOutput" type="button" class="secondary">Copy output</button>
+            <button id="resetFormatter" type="button" class="secondary">New conversion</button>
+        </div>
+
+        <label class="form-control">
+            Formatted output
+            <textarea id="formattedOutput" rows="8" readonly placeholder="Output will appear here"></textarea>
+        </label>
+        <div class="tool-result" id="formatStatus" aria-live="polite"></div>
+    </div>
+</section>
+
+<script src="{{ "/tools/text-format-converter.js" | relative_url }}"></script>

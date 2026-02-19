@@ -415,17 +415,28 @@ body {
 }
 
 .tool-body select,
-.tool-body input[type="number"] {
+.tool-body input[type="number"],
+.tool-body input[type="text"],
+.tool-body textarea {
     padding: 12px 14px;
     border-radius: 12px;
     border: 1px solid rgba(12, 18, 16, 0.2);
     font-family: inherit;
 }
 
+.tool-body textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 12px;
+}
+
+.form-grid-two {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .form-control {
@@ -440,17 +451,40 @@ body {
 }
 
 .form-control input,
-.form-control select {
+.form-control select,
+.form-control textarea {
     background: #ffffff;
     transition: border 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .form-control input:focus,
-.form-control select:focus {
+.form-control select:focus,
+.form-control textarea:focus {
     outline: none;
     border-color: var(--sage-dark);
     box-shadow: 0 0 0 4px rgba(98, 194, 138, 0.25);
     transform: translateY(-1px);
+}
+
+.form-control textarea[readonly] {
+    background: #f2f7f4;
+}
+
+.check-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 10px 12px;
+    border: 1px solid rgba(11, 22, 17, 0.08);
+    border-radius: 12px;
+    background: #f9fcfa;
+}
+
+.check-control input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
 }
 
 .form-actions {
@@ -479,6 +513,12 @@ body {
 .tool-body button:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
+}
+
+.tool-body button.secondary {
+    background: #ffffff;
+    color: var(--sage-dark);
+    border: 1px solid rgba(12, 18, 16, 0.2);
 }
 
 .tool-result {
@@ -555,7 +595,8 @@ body {
     }
 
     .tool-body input,
-    .tool-body select {
+    .tool-body select,
+    .tool-body textarea {
         font-size: 1rem;
     }
 }
