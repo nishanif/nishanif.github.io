@@ -13,6 +13,7 @@ const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
 const formatButton = document.getElementById("formatText");
 const copyButton = document.getElementById("copyOutput");
+const downloadCsvButton = document.getElementById("downloadCsv");
 const resetButton = document.getElementById("resetFormatter");
 const outputText = document.getElementById("formattedOutput");
 const statusBox = document.getElementById("formatStatus");
@@ -418,6 +419,35 @@ async function copyOutput() {
     }
 }
 
+function escapeCsvCell(value) {
+    return `"${value.replace(/"/g, "\"\"")}"`;
+}
+
+function downloadCsv() {
+    if (!outputText.value) {
+        setStatus("Nothing to download yet.");
+        return;
+    }
+
+    const lines = outputText.value.split(/\r?\n/);
+    const rows = ["\"refcode\""];
+    lines.forEach((line) => {
+        rows.push(escapeCsvCell(line));
+    });
+
+    const csvContent = rows.join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "refcodes.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setStatus("CSV downloaded.");
+}
+
 function resetForm() {
     sourceTextInput.value = "";
     formatModeSelect.value = "line";
@@ -439,6 +469,7 @@ function resetForm() {
 
 formatButton.addEventListener("click", formatText);
 copyButton.addEventListener("click", copyOutput);
+downloadCsvButton.addEventListener("click", downloadCsv);
 resetButton.addEventListener("click", resetForm);
 
 sourceTextInput.addEventListener("keydown", (event) => {
