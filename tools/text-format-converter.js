@@ -8,7 +8,6 @@ const specialTextInput = document.getElementById("specialTextInput");
 const specialTextPositionSelect = document.getElementById("specialTextPosition");
 const specialNWrap = document.getElementById("specialNWrap");
 const specialNValueInput = document.getElementById("specialNValue");
-const timestampPatternSelect = document.getElementById("timestampPattern");
 const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
 const formatButton = document.getElementById("formatText");
@@ -17,7 +16,6 @@ const resetButton = document.getElementById("resetFormatter");
 const outputText = document.getElementById("formattedOutput");
 const statusBox = document.getElementById("formatStatus");
 
-const MONTH_SHORT_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MAX_OUTPUT_LENGTH = 256;
 
 function setStatus(message) {
@@ -116,48 +114,9 @@ function applySpaceReplacement(value, replacement) {
     return value.replace(/ /g, replacement);
 }
 
-function padTwoDigits(value) {
-    return String(value).padStart(2, "0");
-}
-
-function buildTimestamp() {
-    const pattern = timestampPatternSelect.value;
-    if (pattern === "none") {
-        return "";
-    }
-
-    const now = new Date();
-    const year = String(now.getFullYear());
-    const month = padTwoDigits(now.getMonth() + 1);
-    const monthShort = MONTH_SHORT_NAMES[now.getMonth()];
-
-    switch (pattern) {
-        case "yyyy":
-            return year;
-        case "yyyy-mm":
-            return `${year}-${month}`;
-        case "yyyy-mmm":
-            return `${year}-${monthShort}`;
-        default:
-            return "";
-    }
-}
-
 function transformValue(value, casePattern, spaceReplacement) {
     const caseUpdated = applyCasePattern(value, casePattern);
     return applySpaceReplacement(caseUpdated, spaceReplacement);
-}
-
-function appendTimestamp(value, timestamp) {
-    if (!timestamp) {
-        return value;
-    }
-
-    if (!value.trim()) {
-        return timestamp;
-    }
-
-    return `${value} ${timestamp}`;
 }
 
 function applySpecialText(value, specialText, position, nValue) {
@@ -229,7 +188,6 @@ function formatText() {
     const skipEmpty = skipEmptyInput.checked;
     const spacePattern = spaceReplacePatternSelect.value;
     const spaceReplacement = getSpaceReplacement();
-    const timestamp = buildTimestamp();
     const specialText = decodeEscapes(specialTextInput.value);
     const specialPosition = specialTextPositionSelect.value;
     const nValue = getValidatedNValue(specialText);
@@ -262,8 +220,7 @@ function formatText() {
         }
 
         const transformedText = transformValue(workingText, textCasePattern, spaceReplacement);
-        const withTimestamp = appendTimestamp(transformedText, timestamp);
-        const withSpecialText = applySpecialText(withTimestamp, specialText, specialPosition, nValue);
+        const withSpecialText = applySpecialText(transformedText, specialText, specialPosition, nValue);
         const output = truncateIfNeeded(withSpecialText);
 
         outputText.value = output.value;
@@ -289,8 +246,7 @@ function formatText() {
     let truncatedLines = 0;
     const outputLines = preparedLines.map((line) => {
         const transformed = transformValue(line, textCasePattern, spaceReplacement);
-        const withTimestamp = appendTimestamp(transformed, timestamp);
-        const withSpecialText = applySpecialText(withTimestamp, specialText, specialPosition, nValue);
+        const withSpecialText = applySpecialText(transformed, specialText, specialPosition, nValue);
         const output = truncateIfNeeded(withSpecialText);
         if (output.truncated) {
             truncatedLines += 1;
@@ -332,7 +288,6 @@ function resetForm() {
     specialTextInput.value = "";
     specialTextPositionSelect.value = "none";
     specialNValueInput.value = "";
-    timestampPatternSelect.value = "none";
     trimLinesInput.checked = true;
     skipEmptyInput.checked = true;
     outputText.value = "";
