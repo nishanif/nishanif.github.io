@@ -105,6 +105,26 @@ function getSpaceReplacement() {
             return "";
         case "underscore":
             return "_";
+        case "hyphen":
+            return "-";
+        case "dot":
+            return ".";
+        case "comma":
+            return ",";
+        case "slash":
+            return "/";
+        case "backslash":
+            return "\\";
+        case "pipe":
+            return "|";
+        case "colon":
+            return ":";
+        case "semicolon":
+            return ";";
+        case "at":
+            return "@";
+        case "hash":
+            return "#";
         case "custom":
             return decodeEscapes(customSpaceValueInput.value || "");
         default:
