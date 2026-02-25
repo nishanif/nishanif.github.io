@@ -1,4 +1,6 @@
 const sourceTextInput = document.getElementById("sourceText");
+const findTextInput = document.getElementById("findTextInput");
+const replaceTextInput = document.getElementById("replaceTextInput");
 const formatModeSelect = document.getElementById("formatMode");
 const lineLengthInput = document.getElementById("lineLengthInput");
 const textCasePatternSelect = document.getElementById("textCasePattern");
@@ -109,6 +111,14 @@ function decodeEscapes(value) {
         .replace(/\\r\\n/g, "\r\n")
         .replace(/\\n/g, "\n")
         .replace(/\\t/g, "\t");
+}
+
+function applyFindReplace(value, findText, replaceText) {
+    if (!findText) {
+        return value;
+    }
+
+    return value.split(findText).join(replaceText);
 }
 
 function toSentenceCase(value) {
@@ -369,6 +379,8 @@ function getValidatedNValue(specialText) {
 
 function formatText() {
     const sourceText = sourceTextInput.value;
+    const findText = decodeEscapes(findTextInput.value);
+    const replaceText = decodeEscapes(replaceTextInput.value);
     const mode = formatModeSelect.value;
     const textCasePattern = textCasePatternSelect.value;
     const trimLines = trimLinesInput.checked;
@@ -418,7 +430,8 @@ function formatText() {
             return;
         }
 
-        const transformedText = transformValue(workingText, textCasePattern, spaceReplacement);
+        const replacedText = applyFindReplace(workingText, findText, replaceText);
+        const transformedText = transformValue(replacedText, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformedText, specialText, specialPosition, nValue);
         const output = applyLimitsByLine(withSpecialText, perLineLimit.value);
 
@@ -450,7 +463,8 @@ function formatText() {
     let perLineLimitedCount = 0;
     let lengthTruncatedCount = 0;
     const outputLines = preparedLines.map((line) => {
-        const transformed = transformValue(line, textCasePattern, spaceReplacement);
+        const replaced = applyFindReplace(line, findText, replaceText);
+        const transformed = transformValue(replaced, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformed, specialText, specialPosition, nValue);
         const output = processOneValue(withSpecialText, perLineLimit.value);
         if (output.perLineLimited) {
@@ -571,6 +585,8 @@ function downloadCsv() {
 
 function resetForm() {
     sourceTextInput.value = "";
+    findTextInput.value = "";
+    replaceTextInput.value = "";
     sourceFileInput.value = "";
     importedSourceFileName = "";
     formatModeSelect.value = "line";
