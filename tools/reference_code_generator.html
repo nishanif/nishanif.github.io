@@ -102,8 +102,11 @@ permalink: /tools/text-format-converter/
         </div>
 
         <div class="form-actions">
+            <input id="sourceFileInput" type="file" accept=".txt,.csv,.json,.md,.log,text/*" hidden>
+            <button id="importFile" type="button" class="secondary">Import file</button>
             <button id="formatText" type="button">Format text</button>
             <button id="copyOutput" type="button" class="secondary">Copy output</button>
+            <button id="downloadOutputFile" type="button" class="secondary">Download text file</button>
             <button id="downloadCsv" type="button" class="secondary">Download CSV</button>
             <button id="resetFormatter" type="button" class="secondary">New conversion</button>
         </div>

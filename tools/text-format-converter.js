@@ -11,8 +11,11 @@ const specialNWrap = document.getElementById("specialNWrap");
 const specialNValueInput = document.getElementById("specialNValue");
 const trimLinesInput = document.getElementById("trimLines");
 const skipEmptyInput = document.getElementById("skipEmpty");
+const sourceFileInput = document.getElementById("sourceFileInput");
+const importFileButton = document.getElementById("importFile");
 const formatButton = document.getElementById("formatText");
 const copyButton = document.getElementById("copyOutput");
+const downloadOutputFileButton = document.getElementById("downloadOutputFile");
 const downloadCsvButton = document.getElementById("downloadCsv");
 const resetButton = document.getElementById("resetFormatter");
 const outputText = document.getElementById("formattedOutput");
@@ -20,6 +23,7 @@ const statusBox = document.getElementById("formatStatus");
 const lengthSummary = document.getElementById("lengthSummary");
 
 const MAX_OUTPUT_LENGTH = 256;
+let importedSourceFileName = "";
 
 function setStatus(message) {
     statusBox.textContent = message;
@@ -27,6 +31,20 @@ function setStatus(message) {
 
 function setLengthSummary(message) {
     lengthSummary.textContent = message;
+}
+
+function getDefaultOutputFileName() {
+    if (!importedSourceFileName) {
+        return "formatted-output.txt";
+    }
+
+    const extensionIndex = importedSourceFileName.lastIndexOf(".");
+    if (extensionIndex <= 0) {
+        return `${importedSourceFileName}-formatted.txt`;
+    }
+
+    const baseName = importedSourceFileName.slice(0, extensionIndex);
+    return `${baseName}-formatted.txt`;
 }
 
 function decodeEscapes(value) {
@@ -419,6 +437,48 @@ async function copyOutput() {
     }
 }
 
+function openSourceFilePicker() {
+    sourceFileInput.click();
+}
+
+async function importSourceFile() {
+    const [file] = sourceFileInput.files || [];
+    if (!file) {
+        return;
+    }
+
+    try {
+        const fileText = await file.text();
+        sourceTextInput.value = fileText;
+        importedSourceFileName = file.name;
+        setStatus(`Imported ${file.name}. Set your options and click "Format text".`);
+        setLengthSummary("");
+        sourceTextInput.focus();
+    } catch (error) {
+        setStatus("File import failed. Please try another file.");
+    } finally {
+        sourceFileInput.value = "";
+    }
+}
+
+function downloadOutputFile() {
+    if (!outputText.value) {
+        setStatus("Nothing to download yet.");
+        return;
+    }
+
+    const blob = new Blob([outputText.value], { type: "text/plain;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = getDefaultOutputFileName();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setStatus(`Text file downloaded as ${link.download}.`);
+}
+
 function escapeCsvCell(value) {
     return `"${value.replace(/"/g, "\"\"")}"`;
 }
@@ -450,6 +510,8 @@ function downloadCsv() {
 
 function resetForm() {
     sourceTextInput.value = "";
+    sourceFileInput.value = "";
+    importedSourceFileName = "";
     formatModeSelect.value = "line";
     lineLengthInput.value = "";
     textCasePatternSelect.value = "none";
@@ -467,8 +529,11 @@ function resetForm() {
     sourceTextInput.focus();
 }
 
+importFileButton.addEventListener("click", openSourceFilePicker);
+sourceFileInput.addEventListener("change", importSourceFile);
 formatButton.addEventListener("click", formatText);
 copyButton.addEventListener("click", copyOutput);
+downloadOutputFileButton.addEventListener("click", downloadOutputFile);
 downloadCsvButton.addEventListener("click", downloadCsv);
 resetButton.addEventListener("click", resetForm);
 
