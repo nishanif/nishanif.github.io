@@ -583,23 +583,32 @@ function downloadCsv() {
     setStatus("CSV downloaded.");
 }
 
+function clearAllToolFields() {
+    const allFields = document.querySelectorAll(".tool-body input, .tool-body select, .tool-body textarea");
+    allFields.forEach((field) => {
+        if (field.tagName === "SELECT") {
+            field.selectedIndex = 0;
+            return;
+        }
+
+        if (field.type === "checkbox" || field.type === "radio") {
+            field.checked = false;
+            return;
+        }
+
+        field.value = "";
+    });
+}
+
 function resetForm() {
-    sourceTextInput.value = "";
-    findTextInput.value = "";
-    replaceTextInput.value = "";
-    sourceFileInput.value = "";
+    clearAllToolFields();
     importedSourceFileName = "";
     formatModeSelect.value = "line";
-    lineLengthInput.value = "";
     textCasePatternSelect.value = "none";
     spaceReplacePatternSelect.value = "none";
-    customSpaceValueInput.value = "";
-    specialTextInput.value = "";
     specialTextPositionSelect.value = "none";
-    specialNValueInput.value = "";
     trimLinesInput.checked = true;
     skipEmptyInput.checked = true;
-    outputText.value = "";
     setStatus("");
     setLengthSummary("");
     updateConditionalInputs();
