@@ -19,15 +19,17 @@ permalink: /tools/text-format-converter/
             Source text
             <textarea id="sourceText" rows="8" placeholder="Paste text here..."></textarea>
         </label>
-        <div class="form-grid form-grid-two">
-            <label class="form-control">
-                Find text (optional)
-                <input type="text" id="findTextInput" placeholder="e.g., 1990 or #">
-            </label>
-            <label class="form-control">
-                Replace with
-                <input type="text" id="replaceTextInput" placeholder="e.g., 2000 or @ (leave blank to remove)">
-            </label>
+        <label class="form-control">
+            Find and replace rules (optional)
+            <div id="replaceRulesList">
+                <div class="form-grid form-grid-two replace-rule-row">
+                    <input type="text" class="replace-find-input" placeholder="Find text (e.g., 1990 or #)">
+                    <input type="text" class="replace-with-input" placeholder="Replace with (leave blank to remove)">
+                </div>
+            </div>
+        </label>
+        <div class="form-actions">
+            <button id="addReplaceRule" type="button" class="secondary">+ Add replacement</button>
         </div>
         <p class="muted">Maximum output length is 256 characters. The tool warns and truncates if exceeded.</p>
 

@@ -1,6 +1,6 @@
 const sourceTextInput = document.getElementById("sourceText");
-const findTextInput = document.getElementById("findTextInput");
-const replaceTextInput = document.getElementById("replaceTextInput");
+const replaceRulesList = document.getElementById("replaceRulesList");
+const addReplaceRuleButton = document.getElementById("addReplaceRule");
 const formatModeSelect = document.getElementById("formatMode");
 const lineLengthInput = document.getElementById("lineLengthInput");
 const textCasePatternSelect = document.getElementById("textCasePattern");
@@ -113,12 +113,55 @@ function decodeEscapes(value) {
         .replace(/\\t/g, "\t");
 }
 
-function applyFindReplace(value, findText, replaceText) {
-    if (!findText) {
-        return value;
-    }
+function createReplaceRuleRow(findValue = "", replaceValue = "") {
+    const row = document.createElement("div");
+    row.className = "form-grid form-grid-two replace-rule-row";
 
-    return value.split(findText).join(replaceText);
+    const findInput = document.createElement("input");
+    findInput.type = "text";
+    findInput.className = "replace-find-input";
+    findInput.placeholder = "Find text (e.g., 1990 or #)";
+    findInput.value = findValue;
+
+    const replaceInput = document.createElement("input");
+    replaceInput.type = "text";
+    replaceInput.className = "replace-with-input";
+    replaceInput.placeholder = "Replace with (leave blank to remove)";
+    replaceInput.value = replaceValue;
+
+    row.appendChild(findInput);
+    row.appendChild(replaceInput);
+
+    return row;
+}
+
+function addReplaceRule(findValue = "", replaceValue = "") {
+    const row = createReplaceRuleRow(findValue, replaceValue);
+    replaceRulesList.appendChild(row);
+    return row;
+}
+
+function resetReplaceRulesRows() {
+    replaceRulesList.innerHTML = "";
+    addReplaceRule();
+}
+
+function getReplaceRules() {
+    const rows = replaceRulesList.querySelectorAll(".replace-rule-row");
+    return Array.from(rows)
+        .map((row) => {
+            const findValue = decodeEscapes(row.querySelector(".replace-find-input").value);
+            const replaceValue = decodeEscapes(row.querySelector(".replace-with-input").value);
+            return {
+                find: findValue,
+                replace: replaceValue,
+            };
+        })
+        .filter((rule) => rule.find !== "");
+}
+
+function applyFindReplaceRules(value, rules) {
+    return rules.reduce((currentValue, rule) => currentValue.split(rule.find).join(rule.replace), value);
 }
 
 function toSentenceCase(value) {
@@ -379,8 +422,7 @@ function getValidatedNValue(specialText) {
 
 function formatText() {
     const sourceText = sourceTextInput.value;
-    const findText = decodeEscapes(findTextInput.value);
-    const replaceText = decodeEscapes(replaceTextInput.value);
+    const replaceRules = getReplaceRules();
     const mode = formatModeSelect.value;
     const textCasePattern = textCasePatternSelect.value;
     const trimLines = trimLinesInput.checked;
@@ -430,7 +472,7 @@ function formatText() {
             return;
         }
 
-        const replacedText = applyFindReplace(workingText, findText, replaceText);
+        const replacedText = applyFindReplaceRules(workingText, replaceRules);
         const transformedText = transformValue(replacedText, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformedText, specialText, specialPosition, nValue);
         const output = applyLimitsByLine(withSpecialText, perLineLimit.value);
@@ -463,7 +505,7 @@ function formatText() {
     let perLineLimitedCount = 0;
     let lengthTruncatedCount = 0;
     const outputLines = preparedLines.map((line) => {
-        const replaced = applyFindReplace(line, findText, replaceText);
+        const replaced = applyFindReplaceRules(line, replaceRules);
         const transformed = transformValue(replaced, textCasePattern, spaceReplacement);
         const withSpecialText = applySpecialText(transformed, specialText, specialPosition, nValue);
         const output = processOneValue(withSpecialText, perLineLimit.value);
@@ -600,8 +642,15 @@ function clearAllToolFields() {
     });
 }
 
+function handleAddReplaceRule() {
+    const newRow = addReplaceRule();
+    const findInput = newRow.querySelector(".replace-find-input");
+    findInput.focus();
+}
+
 function resetForm() {
     clearAllToolFields();
+    resetReplaceRulesRows();
     importedSourceFileName = "";
     formatModeSelect.value = "line";
     textCasePatternSelect.value = "none";
@@ -615,6 +664,7 @@ function resetForm() {
     sourceTextInput.focus();
 }
 
+addReplaceRuleButton.addEventListener("click", handleAddReplaceRule);
 importFileButton.addEventListener("click", openSourceFilePicker);
 sourceFileInput.addEventListener("change", importSourceFile);
 formatButton.addEventListener("click", formatText);
@@ -631,5 +681,9 @@ sourceTextInput.addEventListener("keydown", (event) => {
 
 spaceReplacePatternSelect.addEventListener("change", updateConditionalInputs);
 specialTextPositionSelect.addEventListener("change", updateConditionalInputs);
+
+if (!replaceRulesList.querySelector(".replace-rule-row")) {
+    addReplaceRule();
+}
 
 updateConditionalInputs();
