@@ -9,6 +9,11 @@ permalink: /tools/text-format-converter/
         <p>Paste text and generate formatted reference codes quickly.</p>
     </div>
     <div class="tool-body">
+        <div class="form-actions">
+            <input id="sourceFileInput" type="file" accept=".txt,.csv,.json,.md,.log,text/*" hidden>
+            <button id="importFile" type="button" class="secondary">Import file</button>
+        </div>
+
         <label class="form-control">
             Source text
             <textarea id="sourceText" rows="8" placeholder="Paste text here..."></textarea>
@@ -102,8 +107,6 @@ permalink: /tools/text-format-converter/
         </div>
 
         <div class="form-actions">
-            <input id="sourceFileInput" type="file" accept=".txt,.csv,.json,.md,.log,text/*" hidden>
-            <button id="importFile" type="button" class="secondary">Import file</button>
             <button id="formatText" type="button">Format text</button>
             <button id="copyOutput" type="button" class="secondary">Copy output</button>
             <button id="downloadOutputFile" type="button" class="secondary">Download text file</button>
