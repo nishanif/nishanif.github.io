@@ -47,6 +47,62 @@ function getDefaultOutputFileName() {
     return `${baseName}-formatted.txt`;
 }
 
+function getLowerExtension(fileName) {
+    const dotIndex = fileName.lastIndexOf(".");
+    if (dotIndex < 0) {
+        return "";
+    }
+
+    return fileName.slice(dotIndex).toLowerCase();
+}
+
+function isSpreadsheetExtension(extension) {
+    return extension === ".xlsx" || extension === ".xls";
+}
+
+function convertSpreadsheetRowsToLines(rows) {
+    return rows
+        .map((row) => row.map((cell) => String(cell).trim()).filter((cell) => cell !== "").join(" "))
+        .filter((line) => line !== "")
+        .join("\n");
+}
+
+async function readImportedFileAsText(file) {
+    const extension = getLowerExtension(file.name);
+    if (!isSpreadsheetExtension(extension)) {
+        return {
+            text: await file.text(),
+            sourceKind: "text",
+        };
+    }
+
+    if (typeof XLSX === "undefined") {
+        throw new Error("XLSX parser is unavailable.");
+    }
+
+    const fileBuffer = await file.arrayBuffer();
+    const workbook = XLSX.read(fileBuffer, { type: "array" });
+    const firstSheetName = workbook.SheetNames[0];
+    if (!firstSheetName) {
+        return {
+            text: "",
+            sourceKind: "spreadsheet",
+        };
+    }
+
+    const firstSheet = workbook.Sheets[firstSheetName];
+    const rows = XLSX.utils.sheet_to_json(firstSheet, {
+        header: 1,
+        raw: false,
+        defval: "",
+    });
+
+    return {
+        text: convertSpreadsheetRowsToLines(rows),
+        sourceKind: "spreadsheet",
+    };
+}
+
 function decodeEscapes(value) {
     return value
         .replace(/\\\\/g, "\\")
@@ -448,14 +504,19 @@ async function importSourceFile() {
     }
 
     try {
-        const fileText = await file.text();
+        const importResult = await readImportedFileAsText(file);
+        const fileText = importResult.text;
         sourceTextInput.value = fileText;
         importedSourceFileName = file.name;
-        setStatus(`Imported ${file.name}. Set your options and click "Format text".`);
+        if (importResult.sourceKind === "spreadsheet") {
+            setStatus(`Imported ${file.name} (first sheet). Set your options and click "Format text".`);
+        } else {
+            setStatus(`Imported ${file.name}. Set your options and click "Format text".`);
+        }
         setLengthSummary("");
         sourceTextInput.focus();
     } catch (error) {
-        setStatus("File import failed. Please try another file.");
+        setStatus("File import failed. Use UTF-8 text/CSV or a valid Excel file (.xlsx/.xls).");
     } finally {
         sourceFileInput.value = "";
     }

@@ -10,8 +10,9 @@ permalink: /tools/text-format-converter/
     </div>
     <div class="tool-body">
         <div class="form-actions">
-            <input id="sourceFileInput" type="file" accept=".txt,.csv,.json,.md,.log,text/*" hidden>
+            <input id="sourceFileInput" type="file" accept=".txt,.csv,.json,.md,.log,.xls,.xlsx,text/*" hidden>
             <button id="importFile" type="button" class="secondary">Import file</button>
+            <p class="muted">Import UTF-8 text/CSV files or Excel files (.xlsx/.xls). If using CSV, save as UTF-8 to preserve special characters.</p>
         </div>
 
         <label class="form-control">
@@ -123,4 +124,5 @@ permalink: /tools/text-format-converter/
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="{{ "/tools/text-format-converter.js" | relative_url }}"></script>
